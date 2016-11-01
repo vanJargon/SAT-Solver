@@ -39,9 +39,7 @@ public class Environment {
      * if a binding for l already exists, overwrites it
      */
     public Environment put(Variable v, Bool b) {
-        ImMap<Variable, Bool> newbind = bindings.put(v,b);
-        System.out.print(newbind);
-        return (new Environment (newbind));//(bindings.put (v, b)));
+        return (new Environment (bindings.put (v, b)));
     }
 
     /**

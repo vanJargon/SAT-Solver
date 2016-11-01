@@ -66,10 +66,8 @@ public class SATSolver {
         if (newEnv != null) {
             //          -> add the RECURSE envirinment to this environment
             //          -> return
-            System.out.println("checkd "+assignVar.getName()+" equals true");
-            newEnv.put(assignVar, Bool.TRUE);
-            System.out.println(newEnv.get(assignVar));
-            return newEnv;
+            Environment finalEnv = newEnv.put(assignVar, Bool.TRUE);
+            return finalEnv;
             //      if RECURSE == null:
             //          -> in environment, set literal to be 0 instead of 1
             //          -> RECURSE2
@@ -89,9 +87,8 @@ public class SATSolver {
             if (newEnv==null){
                 return null;
             } else {
-                newEnv.putFalse(assignVar);
-                System.out.println("checkd "+assignVar.getName()+" equals false");
-                return newEnv;
+                Environment finalEnv = newEnv.putFalse(assignVar);
+                return finalEnv;
             }
 
         }
