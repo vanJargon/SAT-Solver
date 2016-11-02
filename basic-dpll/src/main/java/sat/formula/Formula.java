@@ -170,4 +170,66 @@ public class Formula {
             result += "\n" + c;
         return result + "]";
     }
+
+    // ADDED FUNCTION
+     private ImList<Clause> sortByClauseSize(ImList<Clause> clauses) {
+         //divide and conquer sorting
+         //base cases
+//         System.out.println("Clauses :" + clauses);
+         if(clauses.size() <=1) {
+             return clauses;
+         } else if (clauses.size() == 2) {
+             if(clauses.first().size() <= clauses.rest().first().size()){
+                 return clauses;
+             } else {
+                 ImList<Clause> swapClause = new EmptyImList<Clause>();
+                 swapClause = swapClause.add(clauses.first());              // Note for ImList:
+                 swapClause = swapClause.add(clauses.rest().first());       // ADDED LAST = .first()
+                 return swapClause;
+             }
+         } else {
+             ImList<Clause> firstSeg = new EmptyImList<Clause>();
+
+             ImList<Clause> secondSeg = new EmptyImList<Clause>();
+
+             int counter = 0;
+             int limit = clauses.size() /2;
+             for(Clause e: clauses) {
+                 if (counter < limit) {
+                     firstSeg = firstSeg.add(e);
+                 } else {
+                     secondSeg = secondSeg.add(e);
+                 }
+                 counter++;
+             }
+
+             ImList<Clause> sortedFirst = sortByClauseSize(firstSeg);
+             ImList<Clause> sortedSecond = sortByClauseSize(secondSeg);
+             ImList<Clause> finalList = new EmptyImList<>();
+             while (sortedFirst.size()>0 || sortedSecond.size()>0) {
+                 if((sortedFirst.first()!=null) && (sortedSecond.first()!=null)){
+                     if (sortedFirst.first().size() > sortedSecond.first().size()) {
+                         finalList = finalList.add(sortedFirst.first());
+                         sortedFirst = sortedFirst.remove(sortedFirst.first());
+                     } else {
+                         finalList = finalList.add(sortedSecond.first());
+                         sortedSecond = sortedSecond.remove(sortedSecond.first());
+                     }
+                 } else if (sortedFirst.first()==null && sortedSecond.first()!=null){
+                     finalList = finalList.add(sortedSecond.first());
+                     sortedSecond = sortedSecond.remove(sortedSecond.first());
+                 } else if (sortedFirst.first()!=null && sortedSecond.first()==null){
+                     finalList = finalList.add(sortedFirst.first());
+                     sortedFirst = sortedFirst.remove(sortedFirst.first());
+                 }
+             }
+             return finalList;
+
+         }
+
+     }
+
+    public Formula sortClauseSize() {
+        return new Formula(sortByClauseSize(clauses));
+    }
 }

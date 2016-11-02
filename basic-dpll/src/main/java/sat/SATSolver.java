@@ -25,10 +25,9 @@ public class SATSolver {
     public static Environment solve(Formula formula) {
         // TODO: implement this.
         // check for base case
-        if (formula==null || formula.getSize()==0) {
-            return new Environment();
-        }
-
+//        System.out.println("Old:" + formula);
+        if (formula==null || formula.getSize()==0 || formula.getSize()==1 && formula.getClauses().first().isEmpty()) {return new Environment();}
+        System.out.println(formula.getSize());
         //1b. New literal to save
         Variable assignVar = new Variable("dummy");
         //2. Find unit clause:
@@ -36,38 +35,66 @@ public class SATSolver {
         //          -> save the literal
         //          -> add
 
-        for(Clause c: formula.getClauses()) {
-            if (c.isUnit()) {
-                assignVar = new Variable(c.chooseLiteral().getVariable().toString());
-                break;
-            }
-        }
+        //______________LATEST IMPLEMENTATION___________________________________
+        Formula sortedForm = formula.sortClauseSize();
+//        System.out.println("New:"+sortedForm);
+                //Problem - shouldnt call this for every iteration
+        ImList<Clause> clauselist = sortedForm.getClauses();
+        assignVar = sortedForm.getClauses().first().chooseLiteral().getVariable();
+                // Once formula is sorted, the first clause will usually be unit clause
 
-        if (assignVar.toString() == "dummy") {
-        //      if not found:
-        //          -> save the first variable
-            assignVar = formula.getClauses().first().chooseLiteral().getVariable();
-        }
+        //START_________OLD IMPLEMENTATION - Ver 0.0_______________________START
+//        for(Clause c: formula.getClauses()) {
+//            if (c.isUnit()) {
+//                assignVar = new Variable(c.chooseLiteral().getVariable().toString());
+//                break;
+//            }
+//        }
+//        //      if not found:
+//        //          -> save the first variable
+//        if (assignVar.toString() == "dummy") {assignVar = formula.getClauses().first().chooseLiteral().getVariable();}
+        //END_________OLD IMPLEMENTATION - Ver 0.0________________________END
 
         Literal inspectedLit = PosLiteral.make(assignVar);
-
         Formula simplified = new Formula();
-        //  3. Reduce the formula
-        for(Clause c: formula.getClauses()){
+        Environment newEnv = new Environment();
+//          3. Reduce the formula
+        for(Clause c: sortedForm.getClauses()) {//formula.getClauses()){
             Clause newClause = c.reduce(inspectedLit);
-            if (newClause!= null) {
-                simplified.addClause(newClause);
+//            System.out.println("newclause: "+newClause + "size:"+newClause.size());
+            if (newClause!=null) {
+                simplified = simplified.addClause(newClause);
+//                System.out.print(simplified);
+            } else if(c.isUnit() && c.chooseLiteral().equals(inspectedLit.getNegation())){
+                simplified = new Formula();
+                for(Clause d: sortedForm.getClauses()){//formula.getClauses()){
+                    Clause newerClause = d.reduce(inspectedLit.getNegation());
+                    if (newerClause!= null) {
+                        simplified = simplified.addClause(newClause);
+                    } else if(d.isUnit() && d.chooseLiteral().equals(inspectedLit)) {
+                        return null;
+                    }
+                }
+                newEnv = solve(simplified);
+                if (newEnv==null){
+                    return null;
+                } else {
+                    Environment finalEnv = newEnv.putFalse(assignVar);
+                    return finalEnv;
+                }
             }
         }
         // 4. RECURSE:
 
-        Environment newEnv = solve(simplified);
+        newEnv = solve(simplified);
         //      if RECURSE != null:
         if (newEnv != null) {
             //          -> add the RECURSE envirinment to this environment
             //          -> return
             Environment finalEnv = newEnv.put(assignVar, Bool.TRUE);
             return finalEnv;
+
+        } else {
             //      if RECURSE == null:
             //          -> in environment, set literal to be 0 instead of 1
             //          -> RECURSE2
@@ -75,12 +102,11 @@ public class SATSolver {
             //                  > add environment
             //                  > return
             //              - else: RETURN NULL
-        } else {
             simplified = new Formula();
-            for(Clause c: formula.getClauses()){
+            for(Clause c: sortedForm.getClauses()){//formula.getClauses()){
                 Clause newClause = c.reduce(inspectedLit.getNegation());
                 if (newClause!= null) {
-                    simplified.addClause(newClause);
+                    simplified = simplified.addClause(newClause);
                 }
             }
             newEnv = solve(simplified);
@@ -90,10 +116,7 @@ public class SATSolver {
                 Environment finalEnv = newEnv.putFalse(assignVar);
                 return finalEnv;
             }
-
         }
-
-//        throw new RuntimeException("not yet implemented.");
     }
 
     /**
@@ -110,7 +133,25 @@ public class SATSolver {
      */
     private static Environment solve(ImList<Clause> clauses, Environment env) {
         // TODO: implement this.
-        throw new RuntimeException("not yet implemented.");
+        // 1. remove clauses that is already assigned
+        Formula formula = new Formula();
+        for(Clause c: clauses) {
+            for(Literal lit: c){
+                Bool litvalue = env.get(lit.getVariable());
+                if(litvalue == Bool.TRUE) {
+                    c.reduce(PosLiteral.make(lit.getVariable()));
+                } else if (litvalue== Bool.FALSE) {
+                    c.reduce(PosLiteral.make(lit.getVariable()).getNegation());
+                }
+            }
+            if(c!=null) {
+                formula.addClause(c);
+            }
+        }
+
+        return solve(formula);
+
+//        throw new RuntimeException("not yet implemented.");
     }
 
     /**
@@ -126,7 +167,15 @@ public class SATSolver {
     private static ImList<Clause> substitute(ImList<Clause> clauses,
             Literal l) {
         // TODO: implement this.
-        throw new RuntimeException("not yet implemented.");
+        for(Clause c: clauses){
+            Clause newClause = c.reduce(l);
+            clauses.remove(c);
+            if (newClause!= null) {
+                clauses.add(newClause);
+            }
+        }
+        return clauses;
+//        throw new RuntimeException("not yet implemented.");
     }
 
 }
