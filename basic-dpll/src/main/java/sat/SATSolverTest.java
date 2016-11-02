@@ -25,7 +25,11 @@ public class SATSolverTest {
 public static void main(String[] args){
 		ArrayList<ArrayList<String>> list = new ArrayList<ArrayList<String>>();
 		try {
+<<<<<<< HEAD
 			FileInputStream fis = new FileInputStream("D:\\Uni\\Year 2 Sophomore Term\\2D Materials\\SAT-Solver\\basic-dpll\\src\\main\\java\\s8Sat.cnf");
+=======
+			FileInputStream fis = new FileInputStream("C:\\Users\\student\\Desktop\\sampleCNF\\s8SAT.cnf");
+>>>>>>> origin/master
 			BufferedReader br = new BufferedReader(new InputStreamReader(fis));
 
 			String line = null;
