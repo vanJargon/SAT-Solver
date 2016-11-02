@@ -18,8 +18,51 @@ public class SATSolverTest {
     Literal nb = b.getNegation();
     Literal nc = c.getNegation();
 
-	
-	// TODO: add the main method that reads the .cnf file and calls SATSolver.solve to determine the satisfiability
+public static void main(String[] args){
+		ArrayList<ArrayList> list = new ArrayList<ArrayList>();
+		try {
+			FileInputStream fis = new FileInputStream("cnf file directory");
+			BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+
+			String line = null;
+			ArrayList subList = new ArrayList();
+			while ((line = br.readLine()) != null) {
+				if (line.length() != 0) {
+					if (line.charAt(0) != 'c' && line.charAt(0) != 'p') {
+						String var = "";
+						for (int i = 0; i < line.length(); i++) {
+							if (line.charAt(i) == ' ') {
+								if (var != "0") {
+									subList.add(var);
+									var = "";
+								} else if (var == "0") {
+									list.add(new ArrayList(subList));
+									subList.clear();
+								}
+							} else if (i == line.length() - 1) {
+								if (line.charAt(i) == '0'){
+										list.add(new ArrayList(subList));
+										subList.clear();
+								}
+								else{
+									var += line.charAt(i);
+									subList.add(var);
+								}
+							} else {
+								var += line.charAt(i);
+							}
+
+						}
+					}
+				}
+			}
+
+			br.close();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		System.out.println(list);
+	}
 
 	
     public void testSATSolver1(){
