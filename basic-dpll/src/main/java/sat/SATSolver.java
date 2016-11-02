@@ -26,7 +26,12 @@ public class SATSolver {
         // TODO: implement this.
         // check for base case
 //        System.out.println("Old:" + formula);
-        if (formula==null || formula.getSize()==0 || formula.getSize()==1 && (formula.getClauses().first()==null || formula.getClauses().first().chooseLiteral()==null)) {return new Environment();}
+        if (formula==null || formula.getSize()==0) {
+        	return new Environment();
+        } else if (formula.getSize()==1 && (formula.getClauses().first()==null || formula.getClauses().first().chooseLiteral()==null)) {
+        	return null;
+        }
+        
 //        System.out.println(formula.getSize());
         //1b. New literal to save
         Variable assignVar = new Variable("dummy");

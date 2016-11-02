@@ -232,4 +232,21 @@ public class Formula {
     public Formula sortClauseSize() {
         return new Formula(sortByClauseSize(clauses));
     }
+    
+    private Clause filterClauseBySize(Formula formula) {
+    	if(formula.getSize() == 0 ) {
+    		return null;
+    	} else if(formula.getSize() == 1) {
+    		return formula.getClauses().first();
+    	} else if(formula.getSize() == 2) {
+    		ImList<Clause> clauses = formula.getClauses();
+    		if(clauses.first().size < clauses.rest().first().size){
+    			return clauses.first();
+    		} else {
+    			return clauses.rest().first();
+    		}
+    	} else {
+    		
+    	}
+    }
 }
