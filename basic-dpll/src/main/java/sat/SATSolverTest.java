@@ -32,10 +32,11 @@ public static void main(String[] args){
 						String var = "";
 						for (int i = 0; i < line.length(); i++) {
 							if (line.charAt(i) == ' ') {
-								if (var != "0") {
+								if (!var.equals("0")) {
 									subList.add(var);
 									var = "";
-								} else if (var == "0") {
+								} else if (var.equals("0")) {
+									subList.remove("0");
 									list.add(new ArrayList(subList));
 									subList.clear();
 								}
