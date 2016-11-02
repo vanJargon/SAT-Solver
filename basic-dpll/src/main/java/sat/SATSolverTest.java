@@ -7,6 +7,7 @@ import org.junit.Test;
 */
 
 import java.io.BufferedReader;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -25,11 +26,7 @@ public class SATSolverTest {
 public static void main(String[] args){
 		ArrayList<ArrayList<String>> list = new ArrayList<ArrayList<String>>();
 		try {
-<<<<<<< HEAD
 			FileInputStream fis = new FileInputStream("D:\\Uni\\Year 2 Sophomore Term\\2D Materials\\SAT-Solver\\basic-dpll\\src\\main\\java\\s8Sat.cnf");
-=======
-			FileInputStream fis = new FileInputStream("C:\\Users\\student\\Desktop\\sampleCNF\\s8SAT.cnf");
->>>>>>> origin/master
 			BufferedReader br = new BufferedReader(new InputStreamReader(fis));
 
 			String line = null;
@@ -65,42 +62,42 @@ public static void main(String[] args){
 					}
 				}
 			}
-
 			br.close();
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-		System.out.println(list);
-
-	Formula formula = new Formula();
-
-	for (ArrayList<String> clausestring: list) {
-		Clause newClause = new Clause();
-		for (String i:clausestring) {
-//			System.out.print(i+":");
-			if(i.matches("-.*")) {
-				Variable newVar = new Variable(i.substring(1));
-//				System.out.println(i.substring(1));
-				newClause=newClause.add(PosLiteral.make(newVar).getNegation());
-			} else {
-				Variable newVar = new Variable(i);
-				newClause=newClause.add(PosLiteral.make(newVar));
-//				System.out.println(i);
-			}
-			formula = formula.addClause(newClause);
-
-		}
-	}
-
-//	System.out.println(formula);
+//		System.out.println(list);
+	Formula formula = convertMaptoFormula(list);
+	System.out.println(formula);
 	Long start = System.currentTimeMillis();
 	System.out.println("Result:"+SATSolver.solve(formula));
 	Long end = System.currentTimeMillis();
 	System.out.print("Time:"+(end-start)+"ms");
 
+	}
 
-
-
+	public static Formula convertMaptoFormula(ArrayList<ArrayList<String>> clausestrings) {
+		Formula formula = new Formula();
+		for (ArrayList<String> clausestring: clausestrings) {
+            System.out.print("From clause "+clausestring + " ");
+			Clause newClause = new Clause();
+			for (String i:clausestring) {
+//			System.out.print(i+":");
+				if(i.matches("-.*")) {
+					Variable newVar = new Variable(i.substring(1));
+//				System.out.println(i.substring(1));
+					newClause=newClause.add(PosLiteral.make(newVar).getNegation());
+				} else {
+					Variable newVar = new Variable(i);
+					newClause=newClause.add(PosLiteral.make(newVar));
+//				System.out.println(i);
+				}
+			}
+            System.out.println("Add clause:" + newClause);
+            formula = formula.addClause(newClause);
+		}
+        System.out.println("-------------------------");
+		return formula;
 	}
 
 	

@@ -32,38 +32,22 @@ public class SATSolver {
         	return null;
         }
     	System.out.println(">> START ------------------------");
-        System.out.println("Old:" + formula);
-        
-//        System.out.println(formula.getSize());
-        //1b. New literal to save
-        Variable assignVar = new Variable("dummy");
-        //2. Find unit clause:
-        //      if found:
-        //          -> save the literal
-        //          -> add
-
+//        System.out.println("Old:" + formula);
         //______________LATEST IMPLEMENTATION___________________________________
-        Formula sortedForm = formula.sortClauseSize();
-        System.out.println("New:"+sortedForm);
-        System.out.println("-----------------");
-                //Problem - shouldnt call this for every iteration
+//        Formula sortedForm = formula.sortClauseSize();
+        Clause inspectedClause = formula.getSmallestClause();
+        System.out.println("Smallest Clause="+inspectedClause);
+//        System.out.println("New:"+sortedForm);
+//        System.out.println("-----------------");
         if (formula==null || formula.getSize()==0 ) {
         	System.out.println("Null Formula - Success Case");
         	return new Environment();
-        	//|| formula.getSize()==1 && formula.getClauses().first()==null) {
-       
-        } else if (sortedForm.getClauses().first().isEmpty()){
+        } else if (inspectedClause.isEmpty()){
         	System.out.println("Empty Clause - Dead Case - BACKTRACKING");
         		return null;
         }
-        ImList<Clause> clauselist = sortedForm.getClauses();
-//        System.out.println(sortedForm.getClauses().first());
-        assignVar = sortedForm
-                .getClauses()
-                .first()
-                .chooseLiteral()
-                .getVariable();
-                // Once formula is sorted, the first clause will usually be unit clause
+        ImList<Clause> clauselist = formula.getClauses();
+        Variable assignVar = inspectedClause.chooseLiteral().getVariable();
 
         Literal inspectedLit = PosLiteral.make(assignVar);
         System.out.println("Checking Literal"+inspectedLit.toString());
@@ -71,7 +55,7 @@ public class SATSolver {
         Environment newEnv = new Environment();
 //          3. Reduce the formula
         boolean shouldSetFalseInstead = false;
-        for(Clause c: sortedForm.getClauses()) {//formula.getClauses()){
+        for(Clause c: clauselist) {//formula.getClauses()){
             Clause newClause = c.reduce(inspectedLit);
 //            System.out.println("newclause: "+newClause + "size:"+newClause.size());
             if (newClause!=null) {
@@ -101,20 +85,18 @@ public class SATSolver {
         }
 
         //      if RECURSE != null:
-        
-            //      if RECURSE == null:
-            //          -> in environment, set literal to be 0 instead of 1
-            //          -> RECURSE2
-            //              - if RECURSE2 != null:
-            //                  > add environment
-            //                  > return
-            //              - else: RETURN NULL
+        // Set False Instead
         simplified = new Formula();
         System.out.println("Failed to reduce PosLiteral - Moving to NegLiteral");
-        for(Clause e: sortedForm.getClauses()){//formula.getClauses()){
+        for(Clause e: formula.getClauses()){//formula.getClauses()){
             Clause newerClause = e.reduce(inspectedLit.getNegation());
             if (newerClause!= null) {
-                simplified = simplified.addClause(newerClause);
+                if (newerClause.size() >0) {
+                    simplified = simplified.addClause(newerClause);
+                } else {
+                    System.out.println("Reducing Posliteral and Negliteral result in empty clause - BACKTRACKING");
+                    return null;
+                }
             }
         }
         newEnv = solve(simplified);

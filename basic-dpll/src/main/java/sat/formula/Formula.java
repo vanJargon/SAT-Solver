@@ -233,20 +233,51 @@ public class Formula {
         return new Formula(sortByClauseSize(clauses));
     }
     
-    private Clause filterClauseBySize(Formula formula) {
-    	if(formula.getSize() == 0 ) {
+    private Clause filterClauseBySize(ImList<Clause> clauses) {
+    	if(clauses.size() == 0 ) {
     		return null;
-    	} else if(formula.getSize() == 1) {
-    		return formula.getClauses().first();
-    	} else if(formula.getSize() == 2) {
-    		ImList<Clause> clauses = formula.getClauses();
-    		if(clauses.first().size < clauses.rest().first().size){
+    	} else if(clauses.size() == 1) {
+    		return clauses.first();
+    	} else if(clauses.size() == 2) {
+    		if(clauses.first().size() < clauses.rest().first().size()){
     			return clauses.first();
     		} else {
     			return clauses.rest().first();
     		}
     	} else {
+    		ImList<Clause> firstSeg = new EmptyImList<>();
+    		ImList<Clause> secondSeg = new EmptyImList<>();
+    		int counter = 0;
+    		int limit = clauses.size() /2;
+    		
+    		for(Clause c: clauses) {
+    			if(counter<limit) {
+    				firstSeg = firstSeg.add(c);
+    			} else {
+    				secondSeg = secondSeg.add(c);
+    			}
+                counter++;
+    		}
+    		
+    		Clause firstClause = filterClauseBySize(firstSeg);
+    		Clause secondClause = filterClauseBySize(secondSeg);
+    		
+    		if(firstClause==null){
+    			return secondClause;
+    		} else if (secondClause==null) {
+    			return firstClause;
+    		} else if (firstClause.isEmpty() || secondClause.isEmpty()) {
+    			return new Clause();
+    		} else if (firstClause.size() <= secondClause.size()) {
+    			return firstClause;
+    		} else {
+    			return secondClause;
+    		}
     		
     	}
+    }
+    
+    public Clause getSmallestClause() {
+    	return filterClauseBySize(clauses);
     }
 }
