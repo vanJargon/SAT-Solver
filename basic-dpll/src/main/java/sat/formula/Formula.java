@@ -195,7 +195,7 @@ public class Formula {
              int counter = 0;
              int limit = clauses.size() /2;
              for(Clause e: clauses) {
-                 if (counter < limit) {
+                 if (counter > limit) {
                      firstSeg = firstSeg.add(e);
                  } else {
                      secondSeg = secondSeg.add(e);
@@ -205,7 +205,7 @@ public class Formula {
 
              ImList<Clause> sortedFirst = sortByClauseSize(firstSeg);
              ImList<Clause> sortedSecond = sortByClauseSize(secondSeg);
-             ImList<Clause> finalList = new EmptyImList<>();
+             ImList<Clause> finalList = new EmptyImList<Clause>();
              while (sortedFirst.size()>0 || sortedSecond.size()>0) {
                  if((sortedFirst.first()!=null) && (sortedSecond.first()!=null)){
                      if (sortedFirst.first().size() > sortedSecond.first().size()) {

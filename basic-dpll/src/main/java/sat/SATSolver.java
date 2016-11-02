@@ -25,8 +25,9 @@ public class SATSolver {
     public static Environment solve(Formula formula) {
         // TODO: implement this.
         // check for base case
-//        System.out.println("Old:" + formula);
-        if (formula==null || formula.getSize()==0 || formula.getSize()==1 && (formula.getClauses().first()==null || formula.getClauses().first().chooseLiteral()==null)) {return new Environment();}
+    	System.out.println(">> START ------------------------");
+        System.out.println("Old:" + formula);
+        
 //        System.out.println(formula.getSize());
         //1b. New literal to save
         Variable assignVar = new Variable("dummy");
@@ -37,10 +38,20 @@ public class SATSolver {
 
         //______________LATEST IMPLEMENTATION___________________________________
         Formula sortedForm = formula.sortClauseSize();
-//        System.out.println("New:"+sortedForm);
+        System.out.println("New:"+sortedForm);
+        System.out.println("-----------------");
                 //Problem - shouldnt call this for every iteration
+        if (formula==null || formula.getSize()==0 ) {
+        	System.out.println("Null Formula - Success Case");
+        	return new Environment();
+        	//|| formula.getSize()==1 && formula.getClauses().first()==null) {
+       
+        } else if (sortedForm.getClauses().first().isEmpty()){
+        	System.out.println("Empty Clause - Dead Case - BACKTRACKING");
+        		return null;
+        }
         ImList<Clause> clauselist = sortedForm.getClauses();
-//        System.out.print(sortedForm.getClauses().first());
+//        System.out.println(sortedForm.getClauses().first());
         assignVar = sortedForm
                 .getClauses()
                 .first()
@@ -48,58 +59,43 @@ public class SATSolver {
                 .getVariable();
                 // Once formula is sorted, the first clause will usually be unit clause
 
-        //START_________OLD IMPLEMENTATION - Ver 0.0_______________________START
-//        for(Clause c: formula.getClauses()) {
-//            if (c.isUnit()) {
-//                assignVar = new Variable(c.chooseLiteral().getVariable().toString());
-//                break;
-//            }
-//        }
-//        //      if not found:
-//        //          -> save the first variable
-//        if (assignVar.toString() == "dummy") {assignVar = formula.getClauses().first().chooseLiteral().getVariable();}
-        //END_________OLD IMPLEMENTATION - Ver 0.0________________________END
-
         Literal inspectedLit = PosLiteral.make(assignVar);
+        System.out.println("Checking Literal"+inspectedLit.toString());
         Formula simplified = new Formula();
         Environment newEnv = new Environment();
 //          3. Reduce the formula
+        boolean shouldSetFalseInstead = false;
         for(Clause c: sortedForm.getClauses()) {//formula.getClauses()){
             Clause newClause = c.reduce(inspectedLit);
 //            System.out.println("newclause: "+newClause + "size:"+newClause.size());
             if (newClause!=null) {
+            	if(newClause.size() > 0) {
                 simplified = simplified.addClause(newClause);
+            	} else {
+            		shouldSetFalseInstead = true;
+            	}
 //                System.out.print(simplified);
             } else if(c.isUnit() && c.chooseLiteral().equals(inspectedLit.getNegation())){
-                simplified = new Formula();
-                for(Clause d: sortedForm.getClauses()){//formula.getClauses()){
-                    Clause newerClause = d.reduce(inspectedLit.getNegation());
-                    if (newerClause!= null) {
-                        simplified = simplified.addClause(newClause);
-                    } else if(d.isUnit() && d.chooseLiteral().equals(inspectedLit)) {
-                        return null;
-                    }
-                }
-                newEnv = solve(simplified);
-                if (newEnv==null){
-                    return null;
-                } else {
-                    Environment finalEnv = newEnv.putFalse(assignVar);
-                    return finalEnv;
-                }
-            }
+                shouldSetFalseInstead = true;
+        }
         }
         // 4. RECURSE:
+        if(!shouldSetFalseInstead) {
+            newEnv = solve(simplified);
+            if (newEnv != null) {
+                //          -> add the RECURSE envirinment to this environment
+                //          -> return
+            	System.out.println("Successful Recursion - Add & Return");
+                Environment finalEnv = newEnv.put(assignVar, Bool.TRUE);
+                return finalEnv;
 
-        newEnv = solve(simplified);
+            } else {
+            	shouldSetFalseInstead = true;
+            }
+        }
+
         //      if RECURSE != null:
-        if (newEnv != null) {
-            //          -> add the RECURSE envirinment to this environment
-            //          -> return
-            Environment finalEnv = newEnv.put(assignVar, Bool.TRUE);
-            return finalEnv;
-
-        } else {
+        
             //      if RECURSE == null:
             //          -> in environment, set literal to be 0 instead of 1
             //          -> RECURSE2
@@ -107,22 +103,24 @@ public class SATSolver {
             //                  > add environment
             //                  > return
             //              - else: RETURN NULL
-            simplified = new Formula();
-            for(Clause c: sortedForm.getClauses()){//formula.getClauses()){
-                Clause newClause = c.reduce(inspectedLit.getNegation());
-                if (newClause!= null) {
-                    simplified = simplified.addClause(newClause);
-                }
-            }
-            newEnv = solve(simplified);
-            if (newEnv==null){
-                return null;
-            } else {
-                Environment finalEnv = newEnv.putFalse(assignVar);
-                return finalEnv;
+        simplified = new Formula();
+        System.out.println("Failed to reduce PosLiteral - Moving to NegLiteral");
+        for(Clause e: sortedForm.getClauses()){//formula.getClauses()){
+            Clause newerClause = e.reduce(inspectedLit.getNegation());
+            if (newerClause!= null) {
+                simplified = simplified.addClause(newerClause);
             }
         }
+        newEnv = solve(simplified);
+        if (newEnv==null){
+            return null;
+        } else {
+            Environment finalEnv = newEnv.putFalse(assignVar);
+            return finalEnv;
+        }
+        
     }
+    
 
     /**
      * Takes a partial assignment of variables to values, and recursively
