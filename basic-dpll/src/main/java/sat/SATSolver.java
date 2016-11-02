@@ -26,8 +26,8 @@ public class SATSolver {
         // TODO: implement this.
         // check for base case
 //        System.out.println("Old:" + formula);
-        if (formula==null || formula.getSize()==0 || formula.getSize()==1 && formula.getClauses().first().isEmpty()) {return new Environment();}
-        System.out.println(formula.getSize());
+        if (formula==null || formula.getSize()==0 || formula.getSize()==1 && (formula.getClauses().first()==null || formula.getClauses().first().chooseLiteral()==null)) {return new Environment();}
+//        System.out.println(formula.getSize());
         //1b. New literal to save
         Variable assignVar = new Variable("dummy");
         //2. Find unit clause:
@@ -40,7 +40,12 @@ public class SATSolver {
 //        System.out.println("New:"+sortedForm);
                 //Problem - shouldnt call this for every iteration
         ImList<Clause> clauselist = sortedForm.getClauses();
-        assignVar = sortedForm.getClauses().first().chooseLiteral().getVariable();
+//        System.out.print(sortedForm.getClauses().first());
+        assignVar = sortedForm
+                .getClauses()
+                .first()
+                .chooseLiteral()
+                .getVariable();
                 // Once formula is sorted, the first clause will usually be unit clause
 
         //START_________OLD IMPLEMENTATION - Ver 0.0_______________________START
