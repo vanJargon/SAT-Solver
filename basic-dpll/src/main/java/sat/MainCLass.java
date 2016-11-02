@@ -1,4 +1,6 @@
 package sat;
+import java.util.Locale;
+
 import sat.env.*;
 import sat.formula.*;
 import sat.formula.Literal;
@@ -34,7 +36,14 @@ public class MainCLass {
         Literal nb = b.getNegation();
         Literal nc = c.getNegation();
 
-        Environment e = SATSolver.solve(makeFm(makeCl(a,b))	);
-        System.out.print(e);
+        Formula theformula = makeFm(makeCl(nb,c),makeCl(a),makeCl(b,a),makeCl(a,nc));
+
+        Long start = System.currentTimeMillis();
+
+        Environment e = SATSolver.solve(theformula);
+
+        Long end = System.currentTimeMillis();
+        System.out.println(e);
+        System.out.print("Time taken:" + (end-start) + "ms");
     }
 }
