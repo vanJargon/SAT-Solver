@@ -26,7 +26,7 @@ public class SATSolverTest {
 public static void main(String[] args){
 		ArrayList<ArrayList<String>> list = new ArrayList<ArrayList<String>>();
 		try {
-			FileInputStream fis = new FileInputStream("D:\\Uni\\Year 2 Sophomore Term\\2D Materials\\SAT-Solver\\basic-dpll\\src\\main\\java\\smallSat.cnf");
+			FileInputStream fis = new FileInputStream("D:\\Uni\\Year 2 Sophomore Term\\2D Materials\\SAT-Solver\\basic-dpll\\src\\main\\java\\rippleAdderBit3.cnf");
 			BufferedReader br = new BufferedReader(new InputStreamReader(fis));
 
 			String line = null;

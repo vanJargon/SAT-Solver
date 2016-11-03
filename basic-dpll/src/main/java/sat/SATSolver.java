@@ -26,7 +26,7 @@ public class SATSolver {
         // TODO: implement this.
         // check for base case
 //        System.out.println("Old:" + formula);
-        formula = NegateLink.negateLinkReduction(formula);
+//        formula = NegateLink.negateLinkReduction(formula);
         if (formula==null || formula.getSize()==0) {
         	return new Environment();
         } else if (formula.getSize()==1 && (formula.getClauses().first()==null || formula.getClauses().first().chooseLiteral()==null)) {
