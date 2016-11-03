@@ -224,16 +224,14 @@ public class Formula {
                  }
              }
              return finalList;
-
          }
-
      }
 
     public Formula sortClauseSize() {
         return new Formula(sortByClauseSize(clauses));
     }
     
-    private Clause filterClauseBySize(ImList<Clause> clauses) {
+    private Clause filterClauseBySize(ImList<Clause> clauses) { //returns smallest clause
     	if(clauses.size() == 0 ) {
     		return null;
     	} else if(clauses.size() == 1) {
@@ -275,6 +273,51 @@ public class Formula {
     		}
     		
     	}
+    }
+
+    private Clause filterClauseByHeave(ImList<Clause> clauses) { //returns largest clause
+        if(clauses.size() == 0 ) {
+            return null;
+        } else if(clauses.size() == 1) {
+            return clauses.first();
+        } else if(clauses.size() == 2) {
+            if(clauses.first().size() > clauses.rest().first().size()){
+                return clauses.first();
+            } else {
+                return clauses.rest().first();
+            }
+        } else {
+            ImList<Clause> firstSeg = new EmptyImList<>();
+            ImList<Clause> secondSeg = new EmptyImList<>();
+            int counter = 0;
+            int limit = clauses.size() /2;
+
+            for(Clause c: clauses) {
+                if(counter<limit) {
+                    firstSeg = firstSeg.add(c);
+                } else {
+                    secondSeg = secondSeg.add(c);
+                }
+                counter++;
+            }
+
+            Clause firstClause = filterClauseBySize(firstSeg);
+            Clause secondClause = filterClauseBySize(secondSeg);
+
+            if(firstClause==null){
+                return secondClause;
+            } else if (secondClause==null) {
+                return firstClause;
+            }  else if (firstClause.size() >= secondClause.size()) {
+                return firstClause;
+            } else {
+                return secondClause;
+            }
+        }
+    }
+
+    public Clause getLargestClause() {
+        return filterClauseByHeave(clauses);
     }
     
     public Clause getSmallestClause() {

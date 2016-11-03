@@ -26,31 +26,31 @@ public class SATSolver {
         // TODO: implement this.
         // check for base case
 //        System.out.println("Old:" + formula);
+        formula = NegateLink.negateLinkReduction(formula);
         if (formula==null || formula.getSize()==0) {
         	return new Environment();
         } else if (formula.getSize()==1 && (formula.getClauses().first()==null || formula.getClauses().first().chooseLiteral()==null)) {
         	return null;
         }
-    	System.out.println(">> START ------------------------");
+//    	System.out.println(">> START ------------------------");
 //        System.out.println("Old:" + formula);
         //______________LATEST IMPLEMENTATION___________________________________
 //        Formula sortedForm = formula.sortClauseSize();
-        Clause inspectedClause = formula.getSmallestClause();
-        System.out.println("Smallest Clause="+inspectedClause);
-//        System.out.println("New:"+sortedForm);
+        Clause inspectedClause = formula.getSmallestClause(); //ADDED ALGO: saves 7 seconds (67s->60s)
+//        System.out.println("Smallest Clause="+inspectedClause);
 //        System.out.println("-----------------");
         if (formula==null || formula.getSize()==0 ) {
-        	System.out.println("Null Formula - Success Case");
+//        	System.out.println("Null Formula - Success Case");
         	return new Environment();
         } else if (inspectedClause.isEmpty()){
-        	System.out.println("Empty Clause - Dead Case - BACKTRACKING");
+//        	System.out.println("Empty Clause - Dead Case - BACKTRACKING");
         		return null;
         }
         ImList<Clause> clauselist = formula.getClauses();
         Variable assignVar = inspectedClause.chooseLiteral().getVariable();
 
         Literal inspectedLit = PosLiteral.make(assignVar);
-        System.out.println("Checking Literal"+inspectedLit.toString());
+//        System.out.println("Checking Literal"+inspectedLit.toString());
         Formula simplified = new Formula();
         Environment newEnv = new Environment();
 //          3. Reduce the formula
@@ -75,10 +75,8 @@ public class SATSolver {
             if (newEnv != null) {
                 //          -> add the RECURSE envirinment to this environment
                 //          -> return
-            	System.out.println("Successful Recursion - Add & Return");
-                Environment finalEnv = newEnv.put(assignVar, Bool.TRUE);
-                return finalEnv;
-
+//            	System.out.println("Successful Recursion - Add & Return");
+                return newEnv.put(assignVar, Bool.TRUE);
             } else {
             	shouldSetFalseInstead = true;
             }
@@ -87,14 +85,14 @@ public class SATSolver {
         //      if RECURSE != null:
         // Set False Instead
         simplified = new Formula();
-        System.out.println("Failed to reduce PosLiteral - Moving to NegLiteral");
+//        System.out.println("Failed to reduce PosLiteral - Moving to NegLiteral");
         for(Clause e: formula.getClauses()){//formula.getClauses()){
             Clause newerClause = e.reduce(inspectedLit.getNegation());
             if (newerClause!= null) {
                 if (newerClause.size() >0) {
                     simplified = simplified.addClause(newerClause);
                 } else {
-                    System.out.println("Reducing Posliteral and Negliteral result in empty clause - BACKTRACKING");
+//                    System.out.println("Reducing Posliteral and Negliteral result in empty clause - BACKTRACKING");
                     return null;
                 }
             }
@@ -103,8 +101,7 @@ public class SATSolver {
         if (newEnv==null){
             return null;
         } else {
-            Environment finalEnv = newEnv.putFalse(assignVar);
-            return finalEnv;
+            return newEnv.putFalse(assignVar);
         }
         
     }

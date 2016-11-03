@@ -62,6 +62,10 @@ public class Clause implements Iterable<Literal> {
         checkRep();
     }
 
+    public ImList<Literal> getLiterals() {
+        return literals;
+    }
+
     /**
      * @return a clause contain a single literal
      */

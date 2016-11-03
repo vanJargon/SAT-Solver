@@ -26,7 +26,7 @@ public class SATSolverTest {
 public static void main(String[] args){
 		ArrayList<ArrayList<String>> list = new ArrayList<ArrayList<String>>();
 		try {
-			FileInputStream fis = new FileInputStream("D:\\Uni\\Year 2 Sophomore Term\\2D Materials\\SAT-Solver\\basic-dpll\\src\\main\\java\\s8Sat.cnf");
+			FileInputStream fis = new FileInputStream("D:\\Uni\\Year 2 Sophomore Term\\2D Materials\\SAT-Solver\\basic-dpll\\src\\main\\java\\smallSat.cnf");
 			BufferedReader br = new BufferedReader(new InputStreamReader(fis));
 
 			String line = null;
@@ -68,7 +68,7 @@ public static void main(String[] args){
 		}
 //		System.out.println(list);
 	Formula formula = convertMaptoFormula(list);
-	System.out.println(formula);
+//	System.out.println(formula);
 	Long start = System.currentTimeMillis();
 	System.out.println("Result:"+SATSolver.solve(formula));
 	Long end = System.currentTimeMillis();
@@ -79,7 +79,7 @@ public static void main(String[] args){
 	public static Formula convertMaptoFormula(ArrayList<ArrayList<String>> clausestrings) {
 		Formula formula = new Formula();
 		for (ArrayList<String> clausestring: clausestrings) {
-            System.out.print("From clause "+clausestring + " ");
+//            System.out.print("From clause "+clausestring + " ");
 			Clause newClause = new Clause();
 			for (String i:clausestring) {
 //			System.out.print(i+":");
@@ -93,10 +93,10 @@ public static void main(String[] args){
 //				System.out.println(i);
 				}
 			}
-            System.out.println("Add clause:" + newClause);
+//            System.out.println("Add clause:" + newClause);
             formula = formula.addClause(newClause);
 		}
-        System.out.println("-------------------------");
+//        System.out.println("-------------------------");
 		return formula;
 	}
 
