@@ -24,44 +24,36 @@ public class SATSolverTest {
     Literal nc = c.getNegation();
 
 public static void main(String[] args){
-		ArrayList<ArrayList<String>> list = new ArrayList<ArrayList<String>>();
+		ArrayList<ArrayList> list = new ArrayList<ArrayList>();
+		ArrayList<String> clauseList = new ArrayList<String>();
+		int varNum = 0;
 		try {
-			FileInputStream fis = new FileInputStream("D:\\Uni\\Year 2 Sophomore Term\\2D Materials\\SAT-Solver\\basic-dpll\\src\\main\\java\\rippleAdderBit3.cnf");
+			FileInputStream fis = new FileInputStream("C://Users//student//Desktop//sampleCNF//largeSat.cnf");
 			BufferedReader br = new BufferedReader(new InputStreamReader(fis));
 
 			String line = null;
-			ArrayList subList = new ArrayList();
+
 			while ((line = br.readLine()) != null) {
 				if (line.length() != 0) {
-					if (line.charAt(0) != 'c' && line.charAt(0) != 'p') {
-						String var = "";
-						for (int i = 0; i < line.length(); i++) {
-							if (line.charAt(i) == ' ') {
-								if (!var.equals("0")) {
-									subList.add(var);
-									var = "";
-								} else if (var.equals("0")) {
-									subList.remove("0");
-									list.add(new ArrayList(subList));
-									subList.clear();
-								}
-							} else if (i == line.length() - 1) {
-								if (line.charAt(i) == '0'){
-										list.add(new ArrayList(subList));
-										subList.clear();
-								}
-								else{
-									var += line.charAt(i);
-									subList.add(var);
-								}
-							} else {
-								var += line.charAt(i);
+					String[] subList = line.split("\\s+");
+					if (subList[0].equals("p")){
+						varNum = Integer.parseInt(subList[2]); 
+					}
+					else if (!subList[0].equals("c")){
+						for (String i : subList){
+							if (!i.equals("0")){
+								clauseList.add(i);
 							}
-
+							else{
+								list.add(new ArrayList<String>(clauseList));
+								clauseList.clear();
+							}
 						}
 					}
+					
 				}
 			}
+
 			br.close();
 		} catch (Exception e) {
 			System.out.println(e);
