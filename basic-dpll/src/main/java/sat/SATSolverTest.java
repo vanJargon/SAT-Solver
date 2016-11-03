@@ -24,7 +24,7 @@ public class SATSolverTest {
     Literal nc = c.getNegation();
 
 public static void main(String[] args){
-		ArrayList<ArrayList> list = new ArrayList<ArrayList>();
+		ArrayList<ArrayList<String>> list = new ArrayList<>();
 		ArrayList<String> clauseList = new ArrayList<String>();
 		int varNum = 0;
 		try {
