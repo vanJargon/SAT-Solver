@@ -1,10 +1,15 @@
 package sat.otherJ;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Created by privatejw on 4/11/2016.
@@ -57,6 +62,8 @@ public class YetOtherStuff {
 
     void runMe() {
         currentList = readFile(directory + fname);
+        
+        Long start = System.currentTimeMillis();
 
         Node rootNode = new Node(currentList.get(0).get(0).replaceFirst("-",""), false) ;
         varVals.put(rootNode.name, false);
@@ -106,6 +113,8 @@ public class YetOtherStuff {
                     if (currNode == null) {
                         // solution not found
                         System.out.println("UNSAT");
+                        Long end = System.currentTimeMillis();
+						System.out.println("Time taken:" + (end-start) + "ms" + "\n");
                         return;
                     }
                     if (currVars.contains(currNode.name)) {
@@ -123,8 +132,24 @@ public class YetOtherStuff {
             }
         }
         System.out.println("SAT");
-
         System.out.println(varVals);
+        Long end = System.currentTimeMillis();
+		System.out.println("Time taken:" + (end-start) + "ms" + "\n");
+        
+        try {
+			File file = new File("Solution.txt");
+			file.createNewFile();
+			FileWriter writer = new FileWriter(file);
+			Iterator<Entry<String, Boolean>> it = varVals.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry<String, Boolean> pairs = it.next();
+				writer.write(pairs.getKey() + " : " + pairs.getValue() + "\n");
+				writer.flush();
+			}
+			writer.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
     }
 
     private class Stack {
