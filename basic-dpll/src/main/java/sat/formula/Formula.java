@@ -232,7 +232,7 @@ public class Formula {
     }
     
     private Clause filterClauseBySize(ImList<Clause> clauses) { //returns smallest clause
-    	if(clauses.size() == 0 || clauses==null ) {
+    	if(clauses.size() == 0 || clauses==null || clauses.first()==null) {
     		return null;
     	} else if(clauses.size() == 1) {
     		return clauses.first();

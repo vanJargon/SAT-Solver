@@ -16,8 +16,8 @@ import java.util.Map.Entry;
  */
 
 public class YetOtherStuff {
-    String directory = "D://SUTD Term 4//50 .002 - LI01 Computation Structures//2D cnf//SATSOLVER//basic-dpll//src//main//java//";
-    String fname = "jonprob.cnf";
+    String directory = "D://Uni//Year 2 Sophomore Term//2D Materials//SAT-Solver//basic-dpll//src//main//java//";
+    String fname = "largeSat.cnf";
     int numVars;
     ArrayList<ArrayList<String>> currentList;
     ArrayList<String> clause;
@@ -65,8 +65,9 @@ public class YetOtherStuff {
         
         Long start = System.currentTimeMillis();
 
-        Node rootNode = new Node(currentList.get(0).get(0).replaceFirst("-",""), false) ;
-        varVals.put(rootNode.name, false);
+        Node rootNode = new Node(currentList.get(0).get(0).replaceFirst("-",""), true) ;
+        varVals.put(rootNode.name, true);
+        rootNode.right = new Node();
         Node currNode = rootNode;
 
         for (int i=0; i < currentList.size(); i++) {
@@ -83,12 +84,12 @@ public class YetOtherStuff {
                 currVars.add(variable);
                 if (!varVals.containsKey(variable)) {
                     varVals.put(variable, !neg);
-                    if (currNode.value && currNode.right == null) {
+                    if (currNode.value) {
                         Node n  = new Node(variable, !neg);
                         n.parent = currNode;
                         currNode.right = n;
                         currNode = n;
-                    } else if (!currNode.value && currNode.left == null) {
+                    } else if (!currNode.value) {
                         Node n  = new Node(variable, !neg);
                         n.parent = currNode;
                         currNode.left = n;
@@ -107,6 +108,10 @@ public class YetOtherStuff {
                 i = -1;
                 // begin backtracking
                 boolean conflictFound = false;
+                if (currVars.contains(currNode.name)) {
+                    if (currNode.left == null || currNode.right == null)
+                        conflictFound = true;
+                }
                 while (!conflictFound) {
                     varVals.remove(currNode.name);
                     currNode = currNode.parent;
@@ -118,16 +123,18 @@ public class YetOtherStuff {
                         return;
                     }
                     if (currVars.contains(currNode.name)) {
-                        if (currNode.left != null || currNode.right != null)
+                        if (currNode.left == null || currNode.right == null)
                             conflictFound = true;
                     }
                 }
                 if (currNode.left == null) {
                     currNode.value = false;
                     varVals.put(currNode.name, false);
+                    currNode.left = new Node();
                 } else if (currNode.right == null) {
                     currNode.value = true;
                     varVals.put(currNode.name, true);
+                    currNode.right = new Node();
                 }
             }
         }
@@ -166,6 +173,7 @@ public class YetOtherStuff {
         boolean value;
         Node left;
         Node right;
+        Node() {}
         Node(String name, boolean value) {
             this.name = name;
             this.value = value;

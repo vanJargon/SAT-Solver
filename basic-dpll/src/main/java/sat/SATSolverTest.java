@@ -28,10 +28,8 @@ public static void main(String[] args){
 		ArrayList<String> clauseList = new ArrayList<String>();
 		int varNum = 0;
 		try {
-			FileInputStream fis = new FileInputStream("D:\\Uni\\Year 2 Sophomore Term\\2D Materials\\SAT-Solver\\basic-dpll\\src\\main\\java\\largeUNSAT.cnf");
-
+			FileInputStream fis = new FileInputStream("D:\\Uni\\Year 2 Sophomore Term\\2D Materials\\SAT-Solver\\basic-dpll\\src\\main\\java\\sample.cnf");
 			BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-
 			String line = null;
 
 			while ((line = br.readLine()) != null) {
@@ -59,12 +57,17 @@ public static void main(String[] args){
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-//		System.out.println(list);
+		System.out.println(list);
+    //
+
+
+    //
+
 	Formula formula = convertMaptoFormula(list);
-//	System.out.println(formula);
+	System.out.println(formula);
 	Long start = System.currentTimeMillis();
-    System.out.println("Result:"+SATSolver.solve(formula));
-//	System.out.println("Result:"+SATSolver.solveWithNegateLink(formula));
+//    System.out.println("Result:"+SATSolver.Rsolve(formula));
+	System.out.println("Result:"+SATSolver.solveWithNegateLink(formula));
 	Long end = System.currentTimeMillis();
 	System.out.print("Time:"+(end-start)+"ms");
 
@@ -77,15 +80,17 @@ public static void main(String[] args){
 			Clause newClause = new Clause();
 			for (String i:clausestring) {
 //			System.out.print(i+":");
-				if(i.matches("-.*")) {
-					Variable newVar = new Variable(i.substring(1));
+                if(i.matches("\\-?\\d+")) {
+                    if (i.matches("-.*")) {
+                        Variable newVar = new Variable(i.substring(1));
 //				System.out.println(i.substring(1));
-					newClause=newClause.add(PosLiteral.make(newVar).getNegation());
-				} else {
-					Variable newVar = new Variable(i);
-					newClause=newClause.add(PosLiteral.make(newVar));
+                        newClause = newClause.add(PosLiteral.make(newVar).getNegation());
+                    } else {
+                        Variable newVar = new Variable(i);
+                        newClause = newClause.add(PosLiteral.make(newVar));
 //				System.out.println(i);
-				}
+                    }
+                }
 			}
 //            System.out.println("Add clause:" + newClause);
             formula = formula.addClause(newClause);

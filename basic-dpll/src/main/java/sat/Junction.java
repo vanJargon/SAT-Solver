@@ -40,6 +40,7 @@ public class Junction {//extends Clause {
     public int size(){return nodes.size();}
 
     public REnvironment getDecide(REnvironment decideEnv){
+//        System.out.println(shackles);
         REnvironment decidedEnv = decideEnv;
         if(nodes.isEmpty() || nodes==null){
             REnvironment resultNev = new REnvironment();
@@ -59,16 +60,18 @@ public class Junction {//extends Clause {
                 return null;
             } else {
                 ArrayList<Literal> bundle = shackles.get(n);
-                boolean nodePosLiteral = n.equals(PosLiteral.make(n.getVariable()));
-                Bool nodeValue = decidedEnv.get(n.getVariable());
-                for (Literal nn: bundle){
-                    boolean nnPosLiteral = nn.equals(PosLiteral.make(nn.getVariable()));
-                    if(nodePosLiteral && nnPosLiteral) {
-                        decidedEnv.put(nn.getVariable(), nodeValue);
-                    } else if (nodePosLiteral || nnPosLiteral) {
-                        decidedEnv.put(nn.getVariable(), nodeValue.not());
-                    } else {
-                        decidedEnv.put(nn.getVariable(), nodeValue);
+                if(bundle!=null) {
+                    boolean nodePosLiteral = n.equals(PosLiteral.make(n.getVariable()));
+                    Bool nodeValue = decidedEnv.get(n.getVariable());
+                    for (Literal nn : bundle) {
+                        boolean nnPosLiteral = nn.equals(PosLiteral.make(nn.getVariable()));
+                        if (nodePosLiteral && nnPosLiteral) {
+                            decidedEnv.put(nn.getVariable(), nodeValue);
+                        } else if (nodePosLiteral || nnPosLiteral) {
+                            decidedEnv.put(nn.getVariable(), nodeValue.not());
+                        } else {
+                            decidedEnv.put(nn.getVariable(), nodeValue);
+                        }
                     }
                 }
             }
@@ -193,46 +196,98 @@ public class Junction {//extends Clause {
 
     public String toString() {return nodes.toString();}
 
+    public boolean linkJ(Junction j){
+        Junction modClause = j;
+        if(modClause==null){
+            return false;
+        } else if (modClause.size() <=1){
+//            System.out.println(modClause);
+            return false;
+        } else {
+            System.out.println("Linking..");
+            boolean junctionadded = false;
+            HashMap<Literal, Literal> connectedNode = new HashMap<>(); //this.node is key, m.node is value
+            ArrayList<Literal> unassignedNode = new ArrayList<>();
+            for (Literal n : nodes) {
+                System.out.println("For this.node="+n+" - ");
+                    for (Literal m : j.nodes) {
+                        System.out.print("<check with "+m+">");
+                        if(m.equals(n)){
+                            //do nothing
+                        } else if (m.equals(n.getNegation())) {
+                            // GET LINK
+                            System.out.println("~GET~ // ");
+                            nodes = nodes.remove(n);
+                            unassignedNode.remove(m);
+                            connectedNode.put(n,m);
+                        } else {
+                            unassignedNode.add(m);
+                        }
+                    }
+                }
+            for(Literal ll: unassignedNode){
+                nodes = nodes.add(ll);
+            }
+            for(Map.Entry<Literal, Literal> entry: connectedNode.entrySet()){
+                Literal n = entry.getKey();
+                Literal m = entry.getValue();
+
+//                shackles.get(n).addAll()
+            }
+            }
+
+//        System.out.println("seems to have no link");
+        return false;
+
+    }
+
     public boolean link(Clause clause){
         Clause modClause = clause;
         if(modClause==null){
             return false;
-        } else if (modClause.size() ==1){
+        } else if (modClause.size() <=1){
 //            System.out.println(modClause);
             return false;
-        }
-        for(Literal n: nodes) {
+        } else {
+            for (Literal n : nodes) {
 //            System.out.println("Checking node "+n+"..");
 //            System.out.println(n.getNegation());
 //            System.out.println(modClause);
-            if(modClause.contains(n.getNegation()) && modClause.size()>1) {
+                if (modClause.contains(n.getNegation()) && modClause.size() > 1) {
 //                System.out.print(modClause + " linking through "+n+" --- ");
 //                Clause rest = modClause.reduce(n);
 //                System.out.println("->"+rest);
 
-                ImList<Literal> clauserep = modClause.getLiterals();
-                chains.put(n, clauserep);
+                    ImList<Literal> clauserep = modClause.getLiterals();
+                    chains.put(n, clauserep);
 //                System.out.print("Original:"+nodes);
 //                System.out.println("Chain++ "+chains);
 //                System.out.print("OrigiNodes:"+nodes);
-                for(Literal m:clause){
-//                    if(!nodes.contains(m) && !nodes.contains(m.getNegation())) {
+                    for (Literal m : clause) {
+                        if (!nodes.contains(m) && !nodes.contains(m.getNegation())) {
 ////                        System.out.print("Add "+m+" ");
-//                        nodes = nodes.add(m);
-//                    } else if(!nodes.contains(m) && nodes.contains(m.getNegation())){
-////                        nodes = new EmptyImList<>();
-////                        nodes = nodes.remove(m);
-////                        nodes = nodes.remove(m.getNegation());
-//                    }
-                    ArrayList<Literal> dummy = shackles.get(n);
-                    dummy.add(m);
-                    shackles.put(m, dummy);
-                    shackles.remove(n);
-                }
-                nodes = nodes.remove(n);
+                            nodes = nodes.add(m);
+                        } else if(!nodes.contains(m) && nodes.contains(m.getNegation())){
+//                        nodes = new EmptyImList<>();
+//                        nodes = nodes.remove(m);
+//                        nodes = nodes.remove(m.getNegation());
+                    }
+                        ArrayList<Literal> dummy = shackles.get(n);
+//                    System.out.println(dummy);
+                        if (dummy != null) {
+                            dummy.add(m);
+                        } else {
+                            dummy = new ArrayList<>();
+                            dummy.add(m);
+                        }
+                        shackles.put(m, dummy);
+//                        shackles.remove(n);
+                    }
+                    nodes = nodes.remove(n);
 //                System.out.print("to be"+nodes);
 //                System.out.println(" and NewNodes:"+nodes);
-                return true;
+                    return true;
+                }
             }
         }
 //        System.out.println("seems to have no link");

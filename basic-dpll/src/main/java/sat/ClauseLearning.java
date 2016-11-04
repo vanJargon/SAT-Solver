@@ -68,7 +68,7 @@ public class ClauseLearning {
                         for (Junction mn: junctCollect){
 //                            System.out.print("Checking "+jk.getClause()+" with "+mn.getClause());
                             if(jk.link(mn.getClause())){
-                                System.out.print("Chained! Removing:"+mn);
+//                                System.out.print("Chained! Removing:"+mn);
                                 removeJunct.add(mn);
                             }
                         }
