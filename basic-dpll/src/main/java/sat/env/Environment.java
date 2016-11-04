@@ -42,6 +42,8 @@ public class Environment {
         return (new Environment (bindings.put (v, b)));
     }
 
+    public ImMap<Variable, Bool> getBindings() { return bindings;}
+
     /**
      * @return a new environment in which l has the value Bool.TRUE
      * if a binding for l already exists, overwrites it

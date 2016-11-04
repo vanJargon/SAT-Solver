@@ -232,11 +232,12 @@ public class Formula {
     }
     
     private Clause filterClauseBySize(ImList<Clause> clauses) { //returns smallest clause
-    	if(clauses.size() == 0 ) {
+    	if(clauses.size() == 0 || clauses==null ) {
     		return null;
     	} else if(clauses.size() == 1) {
     		return clauses.first();
     	} else if(clauses.size() == 2) {
+//            System.out.println("Clause Size 2:"+clauses);
     		if(clauses.first().size() < clauses.rest().first().size()){
     			return clauses.first();
     		} else {
@@ -301,16 +302,18 @@ public class Formula {
                 counter++;
             }
 
-            Clause firstClause = filterClauseBySize(firstSeg);
-            Clause secondClause = filterClauseBySize(secondSeg);
+            Clause firstClause = filterClauseByHeave(firstSeg);
+            Clause secondClause = filterClauseByHeave(secondSeg);
 
             if(firstClause==null){
                 return secondClause;
             } else if (secondClause==null) {
                 return firstClause;
             }  else if (firstClause.size() >= secondClause.size()) {
+//                System.out.println("Compare "+firstClause+" and "+secondClause+" return "+firstClause);
                 return firstClause;
             } else {
+//                System.out.println("Compare "+firstClause+" and "+secondClause+" return "+secondClause);
                 return secondClause;
             }
         }

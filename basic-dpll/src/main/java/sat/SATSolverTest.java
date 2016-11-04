@@ -26,7 +26,7 @@ public class SATSolverTest {
 public static void main(String[] args){
 		ArrayList<ArrayList<String>> list = new ArrayList<ArrayList<String>>();
 		try {
-			FileInputStream fis = new FileInputStream("D:\\Uni\\Year 2 Sophomore Term\\2D Materials\\SAT-Solver\\basic-dpll\\src\\main\\java\\rippleAdderBit3.cnf");
+			FileInputStream fis = new FileInputStream("D:\\Uni\\Year 2 Sophomore Term\\2D Materials\\SAT-Solver\\basic-dpll\\src\\main\\java\\largeUNSAT.cnf");
 			BufferedReader br = new BufferedReader(new InputStreamReader(fis));
 
 			String line = null;
@@ -70,7 +70,8 @@ public static void main(String[] args){
 	Formula formula = convertMaptoFormula(list);
 //	System.out.println(formula);
 	Long start = System.currentTimeMillis();
-	System.out.println("Result:"+SATSolver.solve(formula));
+    System.out.println("Result:"+SATSolver.solve(formula));
+//	System.out.println("Result:"+SATSolver.solveWithNegateLink(formula));
 	Long end = System.currentTimeMillis();
 	System.out.print("Time:"+(end-start)+"ms");
 
@@ -103,7 +104,7 @@ public static void main(String[] args){
 	
     public void testSATSolver1(){
     	// (a v b)
-    	Environment e = SATSolver.solve(makeFm(makeCl(a,b))	);
+//    	Environment e = SATSolver.solve(makeFm(makeCl(a,b))	);
 /*
     	assertTrue( "one of the literals should be set to true",
     			Bool.TRUE == e.get(a.getVariable())  
@@ -115,7 +116,7 @@ public static void main(String[] args){
     
     public void testSATSolver2(){
     	// (~a)
-    	Environment e = SATSolver.solve(makeFm(makeCl(na)));
+//    	Environment e = SATSolver.solve(makeFm(makeCl(na)));
 /*
     	assertEquals( Bool.FALSE, e.get(na.getVariable()));
 */    	

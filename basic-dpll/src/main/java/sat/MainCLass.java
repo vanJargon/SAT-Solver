@@ -40,10 +40,10 @@ public class MainCLass {
 
         Long start = System.currentTimeMillis();
 
-        Environment e = SATSolver.solve(theformula);
+//        Environment e = SATSolver.solve(theformula);
 
         Long end = System.currentTimeMillis();
-        System.out.println(e);
+//        System.out.println(e);
         System.out.print("Time taken:" + (end-start) + "ms");
     }
 }

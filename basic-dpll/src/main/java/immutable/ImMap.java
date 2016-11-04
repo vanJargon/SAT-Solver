@@ -6,6 +6,12 @@
  */
 package immutable;
 
+import java.util.List;
+import java.util.Map;
+
+import sat.env.Bool;
+import sat.env.Variable;
+
 /**
  * Interface for immutable generic map from keys to values.
  * Keys may not be null.
@@ -17,6 +23,7 @@ public interface ImMap <K,V>{
      * @return true iff the key k has a value associated with it in this map
      */
     boolean containsKey(Object k);
+
 
     /**
      * Looks up value associated with key.
