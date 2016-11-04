@@ -195,7 +195,7 @@ public class Formula {
              int counter = 0;
              int limit = clauses.size() /2;
              for(Clause e: clauses) {
-                 if (counter < limit) {
+                 if (counter > limit) {
                      firstSeg = firstSeg.add(e);
                  } else {
                      secondSeg = secondSeg.add(e);
@@ -205,7 +205,7 @@ public class Formula {
 
              ImList<Clause> sortedFirst = sortByClauseSize(firstSeg);
              ImList<Clause> sortedSecond = sortByClauseSize(secondSeg);
-             ImList<Clause> finalList = new EmptyImList<>();
+             ImList<Clause> finalList = new EmptyImList<Clause>();
              while (sortedFirst.size()>0 || sortedSecond.size()>0) {
                  if((sortedFirst.first()!=null) && (sortedSecond.first()!=null)){
                      if (sortedFirst.first().size() > sortedSecond.first().size()) {
@@ -224,12 +224,106 @@ public class Formula {
                  }
              }
              return finalList;
-
          }
-
      }
 
     public Formula sortClauseSize() {
         return new Formula(sortByClauseSize(clauses));
+    }
+    
+    private Clause filterClauseBySize(ImList<Clause> clauses) { //returns smallest clause
+    	if(clauses.size() == 0 || clauses==null || clauses.first()==null) {
+    		return null;
+    	} else if(clauses.size() == 1) {
+    		return clauses.first();
+    	} else if(clauses.size() == 2) {
+//            System.out.println("Clause Size 2:"+clauses);
+    		if(clauses.first().size() < clauses.rest().first().size()){
+    			return clauses.first();
+    		} else {
+    			return clauses.rest().first();
+    		}
+    	} else {
+    		ImList<Clause> firstSeg = new EmptyImList<>();
+    		ImList<Clause> secondSeg = new EmptyImList<>();
+    		int counter = 0;
+    		int limit = clauses.size() /2;
+    		
+    		for(Clause c: clauses) {
+    			if(counter<limit) {
+    				firstSeg = firstSeg.add(c);
+    			} else {
+    				secondSeg = secondSeg.add(c);
+    			}
+                counter++;
+    		}
+    		
+    		Clause firstClause = filterClauseBySize(firstSeg);
+    		Clause secondClause = filterClauseBySize(secondSeg);
+    		
+    		if(firstClause==null){
+    			return secondClause;
+    		} else if (secondClause==null) {
+    			return firstClause;
+    		} else if (firstClause.isEmpty() || secondClause.isEmpty()) {
+    			return new Clause();
+    		} else if (firstClause.size() <= secondClause.size()) {
+    			return firstClause;
+    		} else {
+    			return secondClause;
+    		}
+    		
+    	}
+    }
+
+    private Clause filterClauseByHeave(ImList<Clause> clauses) { //returns largest clause
+        if(clauses.size() == 0 ) {
+            return null;
+        } else if(clauses.size() == 1) {
+            return clauses.first();
+        } else if(clauses.size() == 2) {
+            if(clauses.first().size() > clauses.rest().first().size()){
+                return clauses.first();
+            } else {
+                return clauses.rest().first();
+            }
+        } else {
+            ImList<Clause> firstSeg = new EmptyImList<>();
+            ImList<Clause> secondSeg = new EmptyImList<>();
+            int counter = 0;
+            int limit = clauses.size() /2;
+
+            for(Clause c: clauses) {
+                if(counter<limit) {
+                    firstSeg = firstSeg.add(c);
+                } else {
+                    secondSeg = secondSeg.add(c);
+                }
+                counter++;
+            }
+
+            Clause firstClause = filterClauseByHeave(firstSeg);
+            Clause secondClause = filterClauseByHeave(secondSeg);
+
+            if(firstClause==null){
+                return secondClause;
+            } else if (secondClause==null) {
+                return firstClause;
+            }  else if (firstClause.size() >= secondClause.size()) {
+//                System.out.println("Compare "+firstClause+" and "+secondClause+" return "+firstClause);
+                return firstClause;
+            } else {
+//                System.out.println("Compare "+firstClause+" and "+secondClause+" return "+secondClause);
+                return secondClause;
+            }
+        }
+    }
+
+    public Clause getLargestClause() {
+        return filterClauseByHeave(clauses);
+    }
+    
+    public Clause getSmallestClause() {
+    	return filterClauseBySize(clauses);
     }
 }

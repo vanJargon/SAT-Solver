@@ -62,6 +62,10 @@ public class Clause implements Iterable<Literal> {
         checkRep();
     }
 
+    public ImList<Literal> getLiterals() {
+        return literals;
+    }
+
     /**
      * @return a clause contain a single literal
      */
@@ -173,7 +177,7 @@ public class Clause implements Iterable<Literal> {
         else if (first.equals(l.getNegation())) return rest;
         else {
             ImList<Literal> restR = reduce(rest, l);
-            if (restR == null) return null;
+            if (restR == null ) return null;
             return restR.add(first);
         }
     }

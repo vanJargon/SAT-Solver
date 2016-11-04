@@ -6,6 +6,11 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 */
 
+import java.io.BufferedReader;
+import java.text.Normalizer;
+import java.util.ArrayList;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import sat.env.*;
 import sat.formula.*;
 
@@ -18,13 +23,86 @@ public class SATSolverTest {
     Literal nb = b.getNegation();
     Literal nc = c.getNegation();
 
-	
-	// TODO: add the main method that reads the .cnf file and calls SATSolver.solve to determine the satisfiability
+public static void main(String[] args){
+		ArrayList<ArrayList<String>> list = new ArrayList<>();
+		ArrayList<String> clauseList = new ArrayList<String>();
+		int varNum = 0;
+		try {
+			FileInputStream fis = new FileInputStream("D:\\Uni\\Year 2 Sophomore Term\\2D Materials\\SAT-Solver\\basic-dpll\\src\\main\\java\\sample.cnf");
+			BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+			String line = null;
+
+			while ((line = br.readLine()) != null) {
+				if (line.length() != 0) {
+					String[] subList = line.split("\\s+");
+					if (subList[0].equals("p")){
+						varNum = Integer.parseInt(subList[2]); 
+					}
+					else if (!subList[0].equals("c")){
+						for (String i : subList){
+							if (!i.equals("0")){
+								clauseList.add(i);
+							}
+							else{
+								list.add(new ArrayList<String>(clauseList));
+								clauseList.clear();
+							}
+						}
+					}
+					
+				}
+			}
+
+			br.close();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		System.out.println(list);
+    //
+
+
+    //
+
+	Formula formula = convertMaptoFormula(list);
+	System.out.println(formula);
+	Long start = System.currentTimeMillis();
+//    System.out.println("Result:"+SATSolver.Rsolve(formula));
+	System.out.println("Result:"+SATSolver.solveWithNegateLink(formula));
+	Long end = System.currentTimeMillis();
+	System.out.print("Time:"+(end-start)+"ms");
+
+	}
+
+	public static Formula convertMaptoFormula(ArrayList<ArrayList<String>> clausestrings) {
+		Formula formula = new Formula();
+		for (ArrayList<String> clausestring: clausestrings) {
+//            System.out.print("From clause "+clausestring + " ");
+			Clause newClause = new Clause();
+			for (String i:clausestring) {
+//			System.out.print(i+":");
+                if(i.matches("\\-?\\d+")) {
+                    if (i.matches("-.*")) {
+                        Variable newVar = new Variable(i.substring(1));
+//				System.out.println(i.substring(1));
+                        newClause = newClause.add(PosLiteral.make(newVar).getNegation());
+                    } else {
+                        Variable newVar = new Variable(i);
+                        newClause = newClause.add(PosLiteral.make(newVar));
+//				System.out.println(i);
+                    }
+                }
+			}
+//            System.out.println("Add clause:" + newClause);
+            formula = formula.addClause(newClause);
+		}
+//        System.out.println("-------------------------");
+		return formula;
+	}
 
 	
     public void testSATSolver1(){
     	// (a v b)
-    	Environment e = SATSolver.solve(makeFm(makeCl(a,b))	);
+//    	Environment e = SATSolver.solve(makeFm(makeCl(a,b))	);
 /*
     	assertTrue( "one of the literals should be set to true",
     			Bool.TRUE == e.get(a.getVariable())  
@@ -36,7 +114,7 @@ public class SATSolverTest {
     
     public void testSATSolver2(){
     	// (~a)
-    	Environment e = SATSolver.solve(makeFm(makeCl(na)));
+//    	Environment e = SATSolver.solve(makeFm(makeCl(na)));
 /*
     	assertEquals( Bool.FALSE, e.get(na.getVariable()));
 */    	
